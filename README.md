@@ -1,0 +1,1 @@
+# Squad Trades app

@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+@config "../tailwind.config.js"
