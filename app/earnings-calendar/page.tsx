@@ -100,9 +100,15 @@ export default function EarningsCalendarPage() {
 export function EarningsAccordion({startDate, endDate}: {startDate: CalendarDate, endDate: CalendarDate}) {
   const [earningsCalendar, setEarningsCalendar] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const fetchData = async () => {
     const earningsCalendarData = await getEarningsCalendarData(startDate.toString(), endDate.toString());
+    if (earningsCalendarData === "error") {
+      setLoading(false);
+      setError(true);
+      return;
+    }
     setEarningsCalendar(earningsCalendarData);
   }
 
@@ -112,37 +118,49 @@ export function EarningsAccordion({startDate, endDate}: {startDate: CalendarDate
       setLoading(false);
   }, [endDate]);
 
+  
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString + " 00:00:00");
+    return date.toDateString();
+  }
+
   return (
-    <div>
-      {loading === true ? (
-          <Spinner label="Loading earnings calendar data"></Spinner>
-        ) : (
-        <Accordion selectionMode="multiple" defaultExpandedKeys={["0"]}>
-          {earningsCalendar.map((item: any, index: number) => (
-            <AccordionItem key={index} aria-label="earningsDate" title={item.date}
-              classNames={{trigger: "cursor-pointer"}}>
-              <div className="mb-4">
-                {(item.symbols?.length !== 0) ? (
-                  <div>
-                    {item.symbols.map(((stock: any, index: number) => (
-                      <Chip
-                        key={index}
-                        variant="flat"
-                        size="lg"
-                        className="mr-2 mb-2"
-                      >
-                        {stock}
-                      </Chip>
-                    )))}
+    <section>
+      {error ? (
+        <div>Error loading data</div>
+      ) : (
+        <>
+          {loading === true ? (
+              <Spinner label="Loading earnings calendar data"></Spinner>
+            ) : (
+            <Accordion selectionMode="multiple" defaultExpandedKeys={["0"]}>
+              {earningsCalendar.map((item: any, index: number) => (
+                <AccordionItem key={index} aria-label="earningsDate" title={formatDate(item.date)}
+                  classNames={{trigger: "cursor-pointer"}}>
+                  <div className="mb-4">
+                    {(item.symbols?.length !== 0) ? (
+                      <div>
+                        {item.symbols.map(((stock: any, index: number) => (
+                          <Chip
+                            key={index}
+                            variant="flat"
+                            size="lg"
+                            className="mr-2 mb-2"
+                          >
+                            {stock}
+                          </Chip>
+                        )))}
+                      </div>
+                    ):(
+                      <div>No earnings releases for this day</div>
+                    )}
                   </div>
-                ):(
-                  <div>No earnings releases for this day</div>
-                )}
-              </div>
-            </AccordionItem>
-          ))}
-        </Accordion>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          )}
+        </>
       )}
-    </div>
+    </section>
   )
 }
