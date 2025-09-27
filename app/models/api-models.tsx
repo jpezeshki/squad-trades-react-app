@@ -2,6 +2,7 @@ export interface Squad {
   squadId: string;
   squadName: string;
   createdBy: string;
+  numberOfMembers: string;
   trades: Trade[];
 }
 

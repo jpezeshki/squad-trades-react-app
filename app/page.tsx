@@ -26,7 +26,7 @@ export default function HomePage() {
       const fetchData = async () => {
         setLoading(true);
         
-        const squadsData = await getSquads('2');
+        const squadsData = await getSquads('1');
         if (squadsData === "error") {
           setLoading(false);
           setError(true);
@@ -102,7 +102,8 @@ export default function HomePage() {
                 {squads.length !== 0 ? (
                   <div>
                     {squads.map((squad: Squad, index: number) => (
-                      <TradesOverviewCard key={index} squadId={squad.squadId} squadName={squad.squadName} createdBy={squad.createdBy} trades={trades} />
+                      <TradesOverviewCard key={index} squadId={squad.squadId} squadName={squad.squadName}
+                      createdBy={squad.createdBy} numberOfMembers={squad.numberOfMembers} trades={trades} />
                     ))}
                   </div>
                 ) : (
@@ -229,7 +230,8 @@ export function TradesOverviewTable({squadId, trades}: {squadId: string, trades:
   );
 }
 
-export function TradesOverviewCard({squadId, squadName, createdBy, trades}: {squadId: string, squadName: string, createdBy: string, trades: Map<string, Trade[]>}) {
+export function TradesOverviewCard({squadId, squadName, createdBy, numberOfMembers, trades}:
+  {squadId: string, squadName: string, createdBy: string, numberOfMembers: string, trades: Map<string, Trade[]>}) {
   const { updateData } = useContext(DataContext);
 
   const updateContextData = () => {
@@ -244,7 +246,7 @@ export function TradesOverviewCard({squadId, squadName, createdBy, trades}: {squ
           <p className="text-md font-bold">{squadName}</p>
           <p className="text-small text-default-500">Created by: {createdBy}</p>
         </div>
-        <div className="ml-auto text-default-500">5 members</div>
+        <div className="ml-auto text-default-500">{numberOfMembers} members</div>
       </CardHeader>
       <Divider />
       <CardBody>
