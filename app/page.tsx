@@ -11,7 +11,6 @@ import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { Divider } from "@heroui/divider";
 import { Chip } from "@heroui/chip";
-
 import DataContext from "./data/data-context";
 
 export default function HomePage() {

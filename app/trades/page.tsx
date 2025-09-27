@@ -2,9 +2,9 @@
 
 import DataContext from "../data/data-context";
 
-import React, {useEffect, useState, useContext, useRef} from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { ArrowDownIcon, ArrowUpCircleIcon, ArrowUpIcon, GroupIcon } from "@/components/icons";
-import { Spinner} from "@heroui/spinner";
+import { Spinner } from "@heroui/spinner";
 import { Card, CardHeader, CardBody} from "@heroui/card";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/table";
 import { Tab, Tabs } from "@heroui/tabs";
@@ -23,9 +23,9 @@ export default function TradesPage() {
   const [error, setError] = useState(false);
   const [trades, setTrades] = useState(new Map());
   const [loading, setLoading] = useState(true);
-  const effectRan = useRef(false);
   const [squadId, setSquadId] = useState("");
   const [squadName, setSquadName] = useState("");
+  const effectRan = useRef(false);
 
   useEffect(() => {
     if (!effectRan.current) {
@@ -65,6 +65,7 @@ export default function TradesPage() {
         setSquadName(squadName);
         setLoading(false);
       }
+      
       fetchData();
       effectRan.current = true;
     }

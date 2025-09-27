@@ -1,6 +1,8 @@
 export async function getSquads(userId: string) {
+    let squadsUrl = "";
+
     try {
-        const getSquadsResponse = await fetch('', {
+        const getSquadsResponse = await fetch(squadsUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -19,7 +21,7 @@ export async function getSquads(userId: string) {
 }
 
 export async function getTrades(squadId: string, requestType: string) {
-    let tradesUrl = '';
+    let tradesUrl = "";
     if (requestType !== "") {
         tradesUrl += "&requestType="+requestType
     }
@@ -38,6 +40,28 @@ export async function getTrades(squadId: string, requestType: string) {
 
         const trades = await tradesResponse.json();
         return trades;
+    } catch (error) {
+        return "error"
+    }
+}
+
+export async function getEarningsCalendarData(startDate: string, endDate: string) {
+    let earningsCalendarUrl = "";
+
+    try {
+        const earningsCalendarResponse = await fetch(earningsCalendarUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!earningsCalendarResponse.ok) {
+            return "error";
+        }
+
+        const earningsCalendarData = await earningsCalendarResponse.json();
+        return earningsCalendarData;
     } catch (error) {
         return "error"
     }
