@@ -15,5 +15,6 @@ export interface Trade {
   initialPrice: string;
   projectedPrice: string;
   direction: string;
+  duration: string;
   notes: string;
 }

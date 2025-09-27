@@ -13,43 +13,56 @@ import { Divider } from "@heroui/divider";
 import { Chip } from "@heroui/chip";
 import { getTrades } from "../services/data-service";
 import { Trade } from "../models/api-models";
+import { Link } from "@heroui/link";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
+import { Button } from "@heroui/button";
 
 export default function TradesPage() {
   const { data } = useContext(DataContext);
-  const [squadData, setSquadData] = useState({});
+  const [squadData, setSquadData] = useState(new Map());
   const [error, setError] = useState(false);
   const [trades, setTrades] = useState(new Map());
   const [loading, setLoading] = useState(true);
   const effectRan = useRef(false);
+  const [squadId, setSquadId] = useState("");
+  const [squadName, setSquadName] = useState("");
 
   useEffect(() => {
     if (!effectRan.current) {
       setLoading(true);
       const dataFromContext = data;
+      let squadId: string;
+      let squadName: string;
       const dataFromLocalContext = localStorage.getItem("context");
-      if (dataFromContext !== "all") {
+      if (dataFromContext.squadId !== "all") {
+        squadId = dataFromContext.squadId;
+        squadName = dataFromContext.squadName;
         setSquadData(dataFromContext);
-        localStorage.setItem("context", dataFromContext);
+        localStorage.setItem("context", JSON.stringify(dataFromContext));
       } else {
         if (dataFromLocalContext !== null) {
-          setSquadData(dataFromLocalContext);
+          const dataFromLocalContextJson = JSON.parse(dataFromLocalContext);
+          squadId = dataFromLocalContextJson.squadId;
+          squadName = dataFromLocalContextJson.squadName;
+          setSquadData(dataFromLocalContextJson);
         } else {
           setSquadData(dataFromContext);
         }
       }
-      
+
       const fetchData = async () => {
         const tradesDataMap = new Map();
-
-        const tradesData = await getTrades("1", "");
+        const tradesData = await getTrades(squadId, "");
         if (tradesData === "error") {
           setLoading(false);
           setError(true);
           return;
         }
 
-        tradesDataMap.set("1", tradesData);
+        tradesDataMap.set(squadId, tradesData);
         setTrades(tradesDataMap);
+        setSquadId(squadId);
+        setSquadName(squadName);
         setLoading(false);
       }
       fetchData();
@@ -139,16 +152,16 @@ export default function TradesPage() {
                 <Tabs aria-label="Dynamic tabs" items={tabs}>
                     {(item) => (
                       <Tab key={item.id} title={item.label}>
-                        <Card>
+                        <Card className="mt-2">
                           <CardHeader className="flex gap-3">
                             <GroupIcon />
                             <div className="flex flex-col">
-                              <p className="text-md font-bold">{"Turf and Turf"}</p>
+                              <p className="text-md font-bold">{squadName}</p>
                             </div>
                           </CardHeader>
                           <Divider />
                           <CardBody>
-                            <TradesTable squadId={"1"} trades={trades}/>
+                            <TradesTable squadId={squadId} trades={trades} duration={item.id}/>
                           </CardBody>
                         </Card>
                       </Tab>
@@ -197,12 +210,18 @@ const columns = [
   }
 ];
 
-export function TradesTable({squadId, trades}: {squadId: string, trades: Map<string, Trade[]>}) {
+export function TradesTable({squadId, trades, duration}: {squadId: string, trades: Map<string, Trade[]>, duration: string}) {
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
   let pages: number;
+  
+  let tradeList = trades.get(squadId);
 
-  const tradesLength = trades.get("1")?.length
+  if (duration !== "all") {
+    tradeList = tradeList?.filter(trade => trade.duration == duration)
+  }
+
+  const tradesLength = tradeList?.length
   if (tradesLength !== undefined) {
     pages = Math.ceil(tradesLength/rowsPerPage);
   } else {
@@ -212,14 +231,14 @@ export function TradesTable({squadId, trades}: {squadId: string, trades: Map<str
   const paginatedTrades = React.useMemo(() => {
     const start = (page-1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return trades.get("1")?.slice(start, end);
-  }, [page, trades.get("1")]);
+    return tradeList?.slice(start, end);
+  }, [page, tradeList]);
 
   const renderCell = React.useCallback((trade: any, columnKey: any) => {
     const cellValue = trade[columnKey];
     const displayStatusColor = (trade.status === "active") ? "success" : "default";
     const displayArrow = (trade.direction === "up") ? <ArrowUpIcon color="green"/> : <ArrowDownIcon  color="red"/>;
-
+    
     switch (columnKey) {
       case "tickerSymbol":
         return (
@@ -253,7 +272,9 @@ export function TradesTable({squadId, trades}: {squadId: string, trades: Map<str
         );
       case "notes":
         return (
-          <div className="flex flex-col">{trade.notes}</div>
+          <div className="flex flex-col">
+            <ViewNotes symbol={trade.tickerSymbol} notes={trade.notes}/>
+          </div>
         );
       default:
         return cellValue;
@@ -288,5 +309,34 @@ export function TradesTable({squadId, trades}: {squadId: string, trades: Map<str
         )}
       </TableBody>
     </Table>
+  );
+}
+
+export function ViewNotes({symbol, notes}: {symbol: any, notes: any}) {
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+
+  return (
+    <>
+      <Link className="cursor-pointer" onPress={onOpen}>
+        View notes
+      </Link>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg" scrollBehavior="inside">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Notes for {symbol}</ModalHeader>
+              <ModalBody>
+                  {notes}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 }
