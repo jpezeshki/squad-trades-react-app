@@ -9,6 +9,7 @@ import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Chip } from "@heroui/chip";
 import { getEarningsCalendarData } from "../services/data-service";
 import { Spinner } from "@heroui/spinner";
+import { ArrowUpCircleIcon } from "@/components/icons";
 
 export default function EarningsCalendarPage() {
   let now = today(getLocalTimeZone());
@@ -37,29 +38,57 @@ export default function EarningsCalendarPage() {
 
   return (
     <section>
-      <h1 className="flex justify-start mb-10 text-2xl font-bold">Earnings Calendar</h1>
-      <div className="grid grid-cols-2 justify-center">
+      <div className="gap-4 grid grid-cols-2 sm:flex basis-1/5 sm:basis-full justify-center">
+        <Chip
+          variant="flat"
+          color="success"
+          size="lg"
+          endContent={<ArrowUpCircleIcon />}
+        >
+          S&P 500: 6500 (+.1%)
+        </Chip>
+
+        <Chip
+          variant="flat"
+          color="success"
+          size="lg"
+          endContent={<ArrowUpCircleIcon />}
+        >
+          <p>Nasdaq: 21000 (+.5%)</p>
+        </Chip>
+
+        <Chip
+          variant="flat"
+          color="success"
+          size="lg"
+          endContent={<ArrowUpCircleIcon />}
+        >
+          <p>Dow Jones: 45000 (+.3%)</p>
+        </Chip>
+      </div>
+      <h1 className="flex justify-start mt-5 mb-5 text-2xl font-bold">Earnings Calendar</h1>
+      <div className="grid grid-cols-2 sm:flex basis-1/5 sm:basis-full justify-center">
         <div className="h-auto">
-        <RangeCalendar
-          minValue={today(getLocalTimeZone())} maxValue={today(getLocalTimeZone()).add({ months: 2 })}
-          classNames={{
-            content: "w-full",
-            cellButton: "cursor-pointer"
-          }}
-          focusedValue={focusedValue}
-          nextButtonProps={{
-            variant: "bordered",
-          }}
-          prevButtonProps={{
-            variant: "bordered",
-          }}
-          topContent={<ButtonGroup
-            fullWidth
-            className="px-3 max-w-full pb-2 pt-3 bg-content1 [&>button]:text-default-500 [&>button]:border-default-200/60"
-            radius="full"
-            size="sm"
-            variant="bordered"
-          >
+          <RangeCalendar
+            minValue={today(getLocalTimeZone())} maxValue={today(getLocalTimeZone()).add({ months: 2 })}
+            classNames={{
+              content: "w-full",
+              cellButton: "cursor-pointer"
+            }}
+            focusedValue={focusedValue}
+            nextButtonProps={{
+              variant: "bordered",
+            }}
+            prevButtonProps={{
+              variant: "bordered",
+            }}
+            topContent={<ButtonGroup
+              fullWidth
+              className="px-3 max-w-full pb-2 pt-3 bg-content1 [&>button]:text-default-500 [&>button]:border-default-200/60"
+              radius="full"
+              size="sm"
+              variant="bordered"
+            >
             <Button
               onPress={() => {
                 setValue(todaysDate);
@@ -89,7 +118,7 @@ export default function EarningsCalendarPage() {
           onChange={setValue}
           onFocusChange={setFocusedValue} />
         </div>
-        <div className="ml-10 w-200">
+        <div className="ml-10 w-250">
           <EarningsAccordion startDate={value.start} endDate={value.end}/>
         </div>
       </div>
@@ -131,7 +160,7 @@ export function EarningsAccordion({startDate, endDate}: {startDate: CalendarDate
       ) : (
         <>
           {loading === true ? (
-              <Spinner label="Loading earnings calendar data"></Spinner>
+              <Spinner label="Loading earnings calendar data" className="flex"></Spinner>
             ) : (
             <Accordion selectionMode="multiple" defaultExpandedKeys={["0"]}>
               {earningsCalendar.map((item: any, index: number) => (
