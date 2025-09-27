@@ -3,9 +3,9 @@ export async function getSquads(userId: string) {
 
     try {
         const getSquadsResponse = await fetch(squadsUrl, {
-            method: 'GET',
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             }
         });
 
@@ -28,9 +28,9 @@ export async function getTrades(squadId: string, requestType: string) {
 
     try {
         const tradesResponse = await fetch(tradesUrl, {
-            method: 'GET',
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             }
         });
 
@@ -50,9 +50,9 @@ export async function getEarningsCalendarData(startDate: string, endDate: string
 
     try {
         const earningsCalendarResponse = await fetch(earningsCalendarUrl, {
-            method: 'GET',
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             }
         });
 
